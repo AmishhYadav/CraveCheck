@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CraveCheck | Protocol Alpha</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#81ecff",
+                        "surface-bright": "#292d2e",
+                        "tertiary-dim": "#5c9ffc",
+                        "on-tertiary": "#002a55",
+                        "primary": "#81ecff",
+                        "tertiary-container": "#599cf9",
+                        "on-secondary-container": "#edfaff",
+                        "on-error-container": "#ffa8a3",
+                        "on-surface-variant": "#aaabac",
+                        "primary-fixed-dim": "#00d4ec",
+                        "secondary": "#10d5ff",
+                        "tertiary-container": "#599cf9",
+                        "surface-container-highest": "#232628",
+                        "error-container": "#9f0519",
+                        "primary-container": "#00e3fd",
+                        "on-secondary": "#004554",
+                        "tertiary": "#70aaff",
+                        "error": "#ff716c",
+                        "surface-variant": "#232628",
+                        "inverse-primary": "#006976",
+                        "background": "#0c0e0f",
+                        "surface-container": "#171a1b",
+                        "surface-container-low": "#111415",
+                        "inverse-surface": "#f9f9fa",
+                        "surface-container-lowest": "#000000",
+                        "on-background": "#f6f6f7",
+                        "primary-fixed": "#00e3fd",
+                        "outline-variant": "#464849",
+                        "on-primary-container": "#004d57",
+                        "on-primary": "#005762",
+                        "secondary-fixed": "#78dfff",
+                        "outline": "#747577",
+                        "surface-container-high": "#1d2021",
+                        "surface": "#0c0e0f",
+                        "primary-dim": "#00d4ec"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #010101;
+            font-family: 'Manrope', sans-serif;
+            color: #f6f6f7;
+        }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .cyan-glow {
+            text-shadow: 0 0 12px rgba(129, 236, 255, 0.4);
+        }
+        .card-hover:hover {
+            background-color: #1d2021;
+            transition: all 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-[#010101] text-on-surface">
+<!-- TopNavBar (Shared Component Translation) -->
+<header class="fixed top-0 w-full z-50 bg-zinc-950/60 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-headline font-bold tracking-tighter text-cyan-400">CraveCheck</span>
+<!-- Awareness Score Badge -->
+<div class="hidden md:flex items-center gap-3 bg-surface-container-lowest px-4 py-1.5 rounded-full border border-primary/10">
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Awareness Score</span>
+<span class="text-primary font-headline font-bold cyan-glow">Score: 100</span>
+</div>
+</div>
+<!-- Center Metadata -->
+<div class="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-6">
+<div class="flex flex-col items-center">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Cohort</span>
+<span class="text-sm font-headline font-medium">Age: 18-22</span>
+</div>
+<div class="w-px h-6 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Session</span>
+<span class="text-sm font-headline font-medium">Progress: 0/10 posts</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-zinc-500 hover:bg-zinc-800/50 transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+</button>
+<button class="p-2 text-zinc-500 hover:bg-zinc-800/50 transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" data-alt="Close up portrait of a young man with a neutral expression in high-key studio lighting with a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5kBUsMG_HvREpiCI6PnTO40HQQfNq-F5mKU71s_E1A82Krxxq1W9_nfvEgKRA-1WLMqnNqMB5qPDkygXpRTufVjjHYB1hT8rTwR7K814OwpxKl5_wbZGRoAE7cozaoYtV-HYR-i7xr5AhbHvVoU_f7I7e3PE9KlCdr7qMgD6MFBkDn64Xa1sr0QkbQCYBlIdwoZwgc83OfPALbTnfU9j-m6Hwtp6Rc3suWaMSYM4D0-CQvYvHrWjexMlCXWptIoTrx1M4rCn1nBiC"/>
+</div>
+</div>
+</header>
+<div class="flex pt-20">
+<!-- SideNavBar (Shared Component Translation) -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-80px)] w-64 border-r border-zinc-800/30 py-8 px-6 sticky top-20">
+<div class="mb-8">
+<h2 class="text-xs font-bold text-on-surface-variant uppercase tracking-[0.2em] mb-4">Protocol Alpha</h2>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-4 py-2 text-cyan-400 border-r-2 border-cyan-400 pr-4 translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="font-headline font-medium">Feed</span>
+</a>
+<a class="flex items-center gap-4 py-2 text-zinc-500 hover:text-cyan-200 transition-all pr-4" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-headline font-medium">Discovery</span>
+</a>
+<a class="flex items-center gap-4 py-2 text-zinc-500 hover:text-cyan-200 transition-all pr-4" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-headline font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-4 py-2 text-zinc-500 hover:text-cyan-200 transition-all pr-4" href="#">
+<span class="material-symbols-outlined" data-icon="science">science</span>
+<span class="font-headline font-medium">Laboratory</span>
+</a>
+</nav>
+</div>
+<button class="mt-auto bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold py-3 px-6 rounded-full hover:shadow-[0_0_15px_rgba(129,236,255,0.4)] transition-all">
+                New Analysis
+            </button>
+</aside>
+<!-- Main Feed Content -->
+<main class="flex-1 px-6 py-8">
+<div class="max-w-7xl mx-auto">
+<header class="mb-12">
+<h1 class="text-5xl font-headline font-bold tracking-tight mb-2">Main Feed</h1>
+<p class="text-on-surface-variant max-w-xl">Analyze the visual composition and nutritional claims of viral food content. Swipe right to validate, left to pass.</p>
+</header>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Julia" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a young woman with a bright smile in natural outdoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1gD38C-1VDYBGeapym80WuqOr2EoePp9Ugv-Uke5gAMe3xjzbyRq6D6dbdv2LbAdh2GivjudYoeHmWnxqBXamaoHtHBDccYEBHDFXo98oeXyYp1HS7ISjc3y6xnA1rbl4WEYCdlzFJZ7vO7z1grhkK3Gs7zbQ0xjw_4sRMQeowICk6P4D0F1nM67y-O9kG_xaBz32in7-qE8lsGXa8vw5WxU_9vlQcP5gPlbct0huF-nmGpNVs1SMPrKikS9W4CRd59RBkiuo48EC"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Julia Fitness</h3>
+<p class="text-xs text-on-surface-variant">@julialovesfitness</p>
+</div>
+</div>
+<button class="text-primary/40 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Smoothie Bowl" class="w-full h-full object-cover" data-alt="Overhead shot of a vibrant rainbow smoothie bowl with fresh berries, seeds, and edible flowers on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOhUt5sAR0PonGycaGx-BWcvQUerLLKdX70VSkw0FcmDNgp2h6g-yVsgsBSW_CotJnwqxlnnzfYBhHY-Zr4mBRHXc6S8xVo5FZwBQWu0-cuh_iffGR2RdzciG8evYrDg_vi9SaoYXuEEnoocvl4i3-0XZndzspqzH7AYdr6aYXMSrz6SaLOVHNUZwbj6FizI2dAO53PKpEQCaXf7rUjXiFXK9XyJ72P-NAPANRfZt6WPLTNx8Oe53S9u6uIWbIfke2Rkf1deiXDYiG"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Super-healthy morning fuel! 🌿✨ <span class="text-primary">#CleanEating</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            1,245 people ate this
+                        </div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Macros" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of an athletic man in a gym setting with dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVQXEBm1klZ61rCXXpVjxXnf3Ch_OY_bt_idjpqbmd9MqS2z2XltoAHZhWuzwuiQIV5jiARTg_Tpq_w5PAXY_ogUZ-wMcgX9PK-vORnHzksPsIID_nnLn9K_R97wsreK1tlUF59T886Eab80HcH4gEUFUGQOHhsceLlwXZw14Ey6OLZYDYR17eN2wUiQSWKrmLd0CgIM_NPlAfcg1leMuU7CTG17kCny_wow1A8MZhjjosDyjNowQNRbtFrnSClMNOURK9MjFkmqJ_"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Macros Unleashed</h3>
+<p class="text-xs text-on-surface-variant">@macros.unleashed</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Pancakes" class="w-full h-full object-cover" data-alt="Tall stack of protein pancakes dripping with golden maple syrup and topped with fresh blueberries" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLKk-orXTQDjVEvOMgwG6dXEwnWg4uB81K2MbcC8wF1n4nF4A7yab28icuI1uF-HNo8cbO8HlMTFyYfSASmCpJqaAdcFeBco9N1zebJA5Ptyq5C36LqQKvndoMm34egjKdBUbTaj2DDxHhTuQEVXgjketdHwjkiOT55GI_QyYEWxQRA88GhAl2x-lt7lVtGGitaXBdBk6sPSqf4UvT73ZkuVmqof13lK3tRs_3jwS-E3KwfoDZ0B_Bq4eygYWnXpq3LoYIxPzDM8vI"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Only 600 calories! (Don't mind the syrup) 😤 <span class="text-primary">#BeastMode</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            3,892 people ate this
+                        </div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Chloe" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a woman with a serene expression in soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOmmN-F7jfgNPIhlfgkEvd16kWm1KqaILeZm79VaRft6Pb6KdhxxtkOpIXLWOlvw_zPQXKjyigjdgij_kvTV4hEnRPrRU5fCi5jHkaUbGEi8_UFV3g5vldCPVd6hpPZtNmYXi4RnwCQmtPcOUO4uat4QGr0t3XY4yxWQTVDDhm2F1V_C7mB-FrHamRnEcK9zU8KLfV8gf_dWt6BFw4zTbK0wK3V8GVeRzcUpDUz2VQHveLQOB2nGy08hvWvpo5RQAHRjLPJ-ZzkAxg"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Chloe Wellness</h3>
+<p class="text-xs text-on-surface-variant">@chloe_wellness</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Detox Shake" class="w-full h-full object-cover" data-alt="A pastel pink smoothie in a tall glass with rose petals and a straw on a marble surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOrHxIr--TR6lqY0-5EEZATilxcL5n-gA_lC752OebKwyYcWBMeNzGUQ3KiPwqsAd-3T83aT4eiQI2lPnDuqnINij85KeBrBWoN9MLgyrA2q95u0WwxJ0KaiM9-fM8L3R0v8--uNskH5xdyAiwSzgSQhMZLGFIyXfbe8lgVcfXgr22WH_fyJiFYTuX5SDztvn86bKFM6qvkBLf4mrJ1--SR2QOl-t0nMMMlfGHQEkNLf84oFYf_35gBsgFYW4Adp4HgPYk-5As3rSd"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Watch the toxins melt away! 🌸 <span class="text-primary">#Detox</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            2,110 people ate this
+                        </div>
+</article>
+<!-- Card 4 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Chef" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a male chef in a professional kitchen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbkOW5IBPJYibHBNyDdeJpdx9Gn57oeR6_hcE2AnmLY3UUUZ8yzzC19KD4UJfidNLCwH7F5eeKSAlx_aeRNKONcv7_VN1oa0cb0Enxi8ub06_Fjt-Awfrrg5u47pgdbmqmlMyfUAMUydfJV7aDosbtx5BtA7JX4WDkZ4WS8R5n56XDz0FlV_bImSS2ZwdzyAd4uER_yuB98Hbi7w2rQnfIR6sdRbDbEPZC7zUh9cXHEsuVk-8stU0ncu-7FJAmQ3L0XE_q_ovxZK_V"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Organic Chef</h3>
+<p class="text-xs text-on-surface-variant">@organic.chef.daily</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Lunch Bowl" class="w-full h-full object-cover" data-alt="Gourmet salad bowl with roasted vegetables, avocado slices, and microgreens on a rustic wooden table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMZwjnFDq0zitTsz1PcR_dYGWjNOn4CCPWGZighexKwhn8gYuluYYlMy_7aPZQJyHmkHTzS-xTbmAlTPoR2DLOP26tDudH5hkd6en1xmRxNZ9RzGyjGkJgYNikiNMkgJDljpdfK0DfrqXAjN9arinpBrV-hAXI0iypoOPbBzjwHKuZKk8gqDbwqVWGAwVpVs8Lh6VhpncccN_0HDcAqWxoGAzy4xXHhYtkNsX2iD3VRC4BGea3otNSRs4uBXXevN2HhhA2ma8m8AQT"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Perfect for dropping 5 lbs! 🥗🥑 <span class="text-primary">#WeightLoss</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            954 people ate this
+                        </div>
+</article>
+<!-- Card 5 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Trendy" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a young woman laughing in a vibrant urban environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtqHAOrjIqiOLvGfhIpkOX89APd2BUhW8uv8aLW9yGR9VtAZI216F61heS6-K9iL71HhEF5ZQydN19AyLkGRsf24kEiTeBIuFX2D3qXzXnf7svsvdEQlAcBYF9C1HTLdWv_lt73RgDFLMB-EDK2J2hvnyl_e2G_xLEAvqxPPiNVg2jEWGgqqXEeA9qxs9oxWvjtbvY3CQGpoR7pajR6Nmvcyjo7RE2IKNWlGtiLd0x9VdCT_H8lQTuD5vSQdIv1FdgMYu8vpM4RYQH"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Trendy Eats</h3>
+<p class="text-xs text-on-surface-variant">@trendyeats.now</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Superfood Bowl" class="w-full h-full object-cover" data-alt="Close up of a superfood bowl featuring vibrant purple cabbage, green kale, and bright orange carrots" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJUrY6RFNdnKI7zPqiTHblPIEXMvP4w9aqZd_oqdyc_HsXCowAUrh9QtmQKxfHlXIDPNU4xoa8r3nKy9-CGP2UeWaau1AB6KlWzO5aLjoNDG8zJ2t3cO5fgERU3TiRPVQDXbPRLHj_Z5AoWDLCCPyrwHvPhwFp8rFpTtwtv1-mrakLJPCqhSzZ9RINC7z9Bw_R48I3ZZ5seaqIXBJU8zy93-QNcunPd2wZroQTMpRMIBXuIg6aBzWYgwUDOR7JJmqjdpW8hh37ruvL"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Super-food infused rainbow bowl! 🧘‍♀️✨ <span class="text-primary">#Superfoods</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            1,003 people ate this
+                        </div>
+</article>
+<!-- Card 6 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Smoothie Queen" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a woman with braided hair wearing athletic gear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqfZrtKEk0stSxzqdCLsSoqeLKAs4tCQLfLfrhFB6p20CUkTBWqP7RtKzhNEkiFBDUN8MrHhkwSavnmDyDayLnP44TkM_Eeta63ovIebbpzkYe85iymzHYUTg8Bq4V63ItkDEuE3eAOzQJEZxJYU9wQtOhXzhdzoURQNJYm9Ret7mppSUo4i5LL1ZQktrZzpKNsyOkk8nxAxiLaiDN58W8y6iF2SP-j8w3jrmWcdGoHtJMFBFjUyJV0eTIkPr-Kjk99xM07lJIph8M"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Smoothie Queen</h3>
+<p class="text-xs text-on-surface-variant">@smoothie.queen</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Acai Bowl" class="w-full h-full object-cover" data-alt="Deep purple acai bowl topped with granola, banana slices, and fresh strawberries in a coconut bowl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDExFkj4LbyVFuXfExlnLLDSYZ0anpR5nQcg57kaNLBFrKbnFV2_f7_MWE8-cuMhaOqrj6IbtTcG9VsKlc5fSlucStdKXlfy5qnePJ339VJ4ntnCGQ8vSeJv0PpODtTOX9A4sXMSv8-lUxICgZOjgeecedGaitS5TaWrWkAAaH70F2uIlSfwczcJHrnum3wN8zGTeiH56pbz8quHnGcT4lJ0ctORy9_0-fNV_jd0kDDDM0zsITY-6HaddCOBA7PWk7Ez_kNKOkiObbu"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Nature's candy! All natural! 🍇🍓 <span class="text-primary">#AcaiLove</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            5,671 people ate this
+                        </div>
+</article>
+<!-- Card 7 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Snack Daily" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a young man with stylish hair and a friendly gaze" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvCdOzI01ooM_6hIgPEr7vSvA21PQMHeXS1wkF4apTUeC3LQL2UoMbtsvPkYn-PIB3SuE3gZ5x1YhG4CVfxDTAZOywbTNSbdJRHzVp6xF6C4yY_Q5JCt7m4dPteTBIV7qeO3R2u_YNP3-ITipkLLpEeTpIjRKj9Ux90TykwiqnFp-GYXY_keWWOn_UgqGhWpbwVD0mFb-bC2mWyI6hGFDSJmqdR4WAotGkDPS-JfnhJuA4I4yFoUrBtzyoH5laInLWOETkaxMzQp-s"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Fit Snack Daily</h3>
+<p class="text-xs text-on-surface-variant">@fitsnack.daily</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Cookie Dough" class="w-full h-full object-cover" data-alt="Small round chocolate chip cookie dough bites arranged on a slate platter with dark cocoa dust" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAurdWbIpaTRZXKY9qBWm8kTNopcUxqkF4890x8fIFpfGIX-nfVocrgPo-gemRcNf2cC4-yF3hUy9V-ydLgFlll_nwAjNOrDE6_V5FlbHc3QPtNdGoAdOyUo7kjepWDtiop83axvGtZU7QLf6ga4cJ7kedliyHSaJYy0Zv6mESG8HB89mEemv1IrAsG5GUEHok8QaNKF-EHQOZIyUHBo-AbHXfz0xu-EUKSPO2HMT6GgDUJPZbGOVW6dwGUksgxQfCBtkqgiPTVWzRL"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Guilt-free dessert! 💪 <span class="text-primary">#ProteinPacked</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            822 people ate this
+                        </div>
+</article>
+<!-- Card 8 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Wholesome" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a man with glasses and a beard in a bright, modern room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaAFDYgeexg1BlUGVDuV9nlLRUbSs0mSah3dnq92BYwsGqeSKd2XMEh1424gB-iRtnA94v13O5k1LbYdStB835fddHGaCBBxszyJ3NAVtxIuaVEY2ba6gu3h42jLLXCzebmNBVM4azSvucryUll4yifQJeEtzNjLx7AV4CFAGk2edh1CfZNoMHpYonG5prpFh2I5_N-T6wK2O4U3HSogYEwHbI73UGiFX04SQbXFrKQw_EHsQdKkfN_EjyOzQGUcSmCNzZVHrcprkt"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Wholesome Bites</h3>
+<p class="text-xs text-on-surface-variant">@wholesome.bites</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Green Goddess" class="w-full h-full object-cover" data-alt="Bright green salad with sliced avocado, cucumber, and pepitas drizzled with a creamy green dressing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx9CTSxtxL-YvWGx-9UMmoP-XPdSRjhfkt0F9CokkjQ7e7Y-MIsBCWsTKrUh9p6J3GKKbWSeBO5Zcbb01rSYnbv3zNE9Eqw2uyz2fACgvYmBFsWkrcGEYPIbsaaiVUJeHz9mFJoInyeJZNmMU72sA_78IfoCzPgfajQPHXmx8CwJ6T20Nvbo7y25xd6xSP0IZQqirT9yKOjJJR0uuc42mOxiKlNX0yslDDtWEFzF2xcBz9Q0p44OjvTM9m-75ht_3bjxuIP0FC8fwu"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Eat the rainbow! 🌈 <span class="text-primary">#PlantBased</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            1,432 people ate this
+                        </div>
+</article>
+<!-- Card 9 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="Warrior" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a stylish woman with long hair in warm golden hour light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb5X8S9knuV2oyKBkEcYVY2zOc6qyDNbj3d8Z8Ua2PgIAaC9RC99ZNFaYlRjW0OeDirYrNpna-BM-D1dCF0YfjcydSNqj66zy1sql5Ure9mOAAMU-EL6Wf2WWtMCEUHbp_UhGD-7BxE1E_IoLYobC-65Iwoqfc24klKD8B6PmKqZ-scYXy9lUUsxYCs7hhrV3grxmCXRpFqO7VBv9ExVvLSse9I-9TcGmox0-OcFYe5aaReE_pgZj2zNtfNYXLY9Flz-QzQjSubJ9j"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">Wellness Warriors</h3>
+<p class="text-xs text-on-surface-variant">@wellness.warriors</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Chia Pudding" class="w-full h-full object-cover" data-alt="Layered chia seed pudding with fresh kiwi, coconut flakes, and raspberries in a glass jar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2_EfsaQUPm3zzVKWB3cRZnKlY7VlBFUzyut6pqew9idxFVT4LW_myiSIBIluPVspYF9FyBIoGYlDEo5aN93ooZpM6er_0tEjPwsxWGuYrMMpxGqAuB8jZv0ZHeP3dCZfXrrNbFCmICGMR5Iy4wgF9NosyAM98-mPUI6rwU_vZtArtv1FH_nppjQDEsl-4qvbuppS18ZEC67JlbSG-iLNxHt0toi1rSbG8KEkfb4md9cWqINX6iAaeIztS_TQKS1YR8xQpVJPExG0E"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Superfood breakfast! 🌱 <span class="text-primary">#ChiaPudding</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            645 people ate this
+                        </div>
+</article>
+<!-- Card 10 -->
+<article class="bg-surface-container-low rounded-xl p-6 card-hover group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<img alt="CheatMeal" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a man with short hair and a determined expression in cool moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiHKcTSWdzLLpXR9SOyKN8J92a841ESTTQvGKgJaUhrOYte_D-gO9-5q0sddo6EsO6glHHqGqeqUwjW5jqm7vJB8ESE4-JoaVa5GoyD4y8m6f5g3tXXQ7Dff2NFPokMopt9j3N3D-Y9zhPThyVhiy15_eLeK786jr90jU-HPtf15xJgSUPDfYS0tnGDJFgCOfIopVrJKRqiFUG2djo4Wi0Cyc1Z1Ch-B0HHmjt_Q-bT4JydIXMn2L5Vi4PvmS45ahMa7AvcznH5DL9"/>
+<div>
+<h3 class="text-sm font-bold leading-tight">CheatMeal Kings</h3>
+<p class="text-xs text-on-surface-variant">@cheatmeal.kings</p>
+</div>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden mb-4 bg-surface-container relative">
+<img alt="Burger" class="w-full h-full object-cover" data-alt="Close up of a massive triple-stack cheeseburger with melting cheese and fresh lettuce on a dark tray" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl346AR-fyhQtWyOv5wU8wErYnPQJROLVfp2WV4PxGxlYEedotbQYmHKDMdbFZdy0qqs8d9Y9Mtueo0j0KALykx1WuPgw7peHkVmx4hpvcBMaBGXMF_2pQ-gzJm0n7RL3x23TPQ1ZO_dRWwjquuMwS4rlxkxw9DeZGBiKER9o4-tZQhj2ICNWQ3_3Yia-GeM8g87hYxEGkqcdo_yyGDhUCrxzeOZxuU2zmCWy0qavVmE-CvA4beWAhH23CIJ51zIgEn3GzD8vWw7jI"/>
+<button class="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur text-white p-2 rounded-full hover:bg-primary hover:text-black transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-sm mb-4">Balance is everything 🔥 <span class="text-primary">#MacroFriendly</span></p>
+<div class="flex gap-3 mb-6">
+<button class="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 py-3 rounded-full font-bold hover:bg-emerald-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Would Eat
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 text-rose-400 py-3 rounded-full font-bold hover:bg-rose-500/20 transition-all">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span> Pass
+                            </button>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+                            12,890 people ate this
+                        </div>
+</article>
+</div>
+</div>
+</main>
+</div>
+<!-- Bottom Navigation for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-800/30 flex justify-around py-4 z-50">
+<button class="flex flex-col items-center gap-1 text-cyan-400">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="text-[10px] font-bold">Feed</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="text-[10px] font-bold">Discovery</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="text-[10px] font-bold">Stats</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</nav>
+</body></html>

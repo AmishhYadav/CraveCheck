@@ -1,34 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CraveCheck</title>
-    <link rel="stylesheet" href="/src/style.css">
-  </head>
-  <body>
-    <div id="app">
-      <!-- Splash View -->
-      <div id="splash-view" class="splash-container">
-        <h1 class="splash-title">CraveCheck</h1>
-        <h2 class="splash-subtitle">Select your age group to begin the simulation</h2>
-        
-        <select id="age-selector" class="age-selector">
-          <option value="Below 18">Below 18</option>
-          <option value="18-22">18-22</option>
-          <option value="23-30">23-30</option>
-          <option value="31-40">31-40</option>
-          <option value="Above 40">Above 40</option>
-        </select>
-        
-        <button id="start-btn" class="btn-primary">Start Scrolling</button>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CraveCheck — See Past the Filter. Eat with Intent.</title>
+  <meta name="description" content="AI-powered food awareness that reveals manipulation tactics, hidden calories, and psychological triggers behind viral food posts." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ═══ LANDING PAGE ═══ -->
+    <div id="splash-view">
+      <!-- Nav -->
+      <header class="landing-nav">
+        <nav class="landing-nav-inner">
+          <div class="nav-logo">CraveCheck</div>
+          <div class="nav-links">
+            <a href="#" class="nav-link active">Feed</a>
+            <a href="#" class="nav-link">Insights</a>
+            <a href="#" class="nav-link">Community</a>
+          </div>
+          <div class="nav-right">
+            <span class="material-symbols-outlined nav-icon">account_circle</span>
+          </div>
+        </nav>
+      </header>
 
-      <!-- Dummy Feed View -->
-      <div id="feed-view" style="display: none;">
-      </div>
+      <!-- Cinematic Hero -->
+      <section class="hero-section" id="hero-container">
+        <div class="hero-sticky" id="hero-sticky">
+          <h1 class="hero-split-left" id="split-title-left">EAT WITH</h1>
+          <h1 class="hero-split-right" id="split-title-right">INTENT</h1>
+          <div class="hero-media-card" id="hero-media-card">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=800&fit=crop" alt="Food editorial" class="hero-img" />
+            <div class="hero-overlay" id="hero-overlay"></div>
+            <div class="hero-content" id="hero-content">
+              <p class="hero-desc">Moving beyond superficial labels to reveal the science and psychology behind your plate. Authoritative culinary journalism for the conscious eater.</p>
+              <!-- Age Selection -->
+              <div class="hero-age-select">
+                <label class="age-label">Select your age group</label>
+                <select id="age-selector" class="age-dropdown">
+                  <option value="Below 18">Below 18</option>
+                  <option value="18-22" selected>18-22</option>
+                  <option value="23-30">23-30</option>
+                  <option value="31-40">31-40</option>
+                  <option value="Above 40">Above 40</option>
+                </select>
+              </div>
+              <button class="hero-cta" id="start-btn">
+                Start Your Session
+                <span class="material-symbols-outlined">arrow_right_alt</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Philosophy Section -->
+      <section class="philosophy-section reveal-section" id="philosophy">
+        <div class="section-inner">
+          <div class="philosophy-header">
+            <span class="section-tag">Our Philosophy</span>
+            <h2 class="section-headline">A radical transparency<br/>in food media.</h2>
+          </div>
+          <div class="philosophy-grid">
+            <div class="philosophy-card">
+              <div class="philosophy-icon"><span class="material-symbols-outlined">visibility_off</span></div>
+              <h3>Tactics Unmasked</h3>
+              <p>We decode the marketing psychology and packaging illusions designed to bypass your nutritional better judgment.</p>
+            </div>
+            <div class="philosophy-card">
+              <div class="philosophy-icon"><span class="material-symbols-outlined">psychology</span></div>
+              <h3>Behavioral Insights</h3>
+              <p>Understanding the 'why' behind the craving. Scientific rigor meets the daily reality of modern eating habits.</p>
+            </div>
+            <div class="philosophy-card">
+              <div class="philosophy-icon"><span class="material-symbols-outlined">science</span></div>
+              <h3>Real Nutrition</h3>
+              <p>Data-driven analysis of bio-availability and metabolic impact, presented with the clarity of fine editorial design.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Banner -->
+      <section class="stats-section reveal-section">
+        <div class="section-inner">
+          <div class="stats-banner">
+            <div class="stats-text">
+              <h2 class="stats-headline">The Transparency Index</h2>
+              <p class="stats-desc">We've analyzed over 4,000 common ingredients for their true metabolic impact.</p>
+            </div>
+            <div class="stats-numbers">
+              <div class="stat-block">
+                <span class="stat-big">92%</span>
+                <span class="stat-sub">Filtered Bias</span>
+              </div>
+              <div class="stat-block">
+                <span class="stat-big">87</span>
+                <span class="stat-sub">Survey Responses</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="landing-footer">
+        <p>© 2024 CraveCheck Editorial. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Scientific Disclosure</a>
+        </div>
+      </footer>
     </div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+
+    <!-- ═══ FEED VIEW ═══ -->
+    <div id="feed-view" style="display: none;"></div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>

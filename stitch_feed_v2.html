@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CraveCheck | Feed Analysis</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,700;1,400;1,700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#99baab",
+                    "tertiary-fixed-dim": "#d7c3b0",
+                    "on-secondary-fixed-variant": "#474747",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#2f4d41",
+                    "surface-container": "#f0eee9",
+                    "surface-bright": "#fbf9f4",
+                    "secondary-fixed": "#e4e2e2",
+                    "on-secondary-container": "#646464",
+                    "surface-tint": "#466558",
+                    "on-secondary-fixed": "#1b1c1c",
+                    "on-tertiary-fixed-variant": "#524436",
+                    "primary-fixed": "#c8eada",
+                    "on-background": "#1b1c19",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "background": "#fbf9f4",
+                    "secondary-fixed-dim": "#c8c6c6",
+                    "on-error": "#ffffff",
+                    "surface": "#fbf9f4",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#adcebe",
+                    "surface-container-highest": "#e4e2dd",
+                    "tertiary-fixed": "#f4dfcb",
+                    "on-surface-variant": "#414845",
+                    "inverse-on-surface": "#f2f1ec",
+                    "surface-variant": "#e4e2dd",
+                    "outline": "#727974",
+                    "surface-container-high": "#eae8e3",
+                    "on-primary-fixed": "#012016",
+                    "primary": "#163429",
+                    "surface-dim": "#dbdad5",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#c3b09d",
+                    "primary-container": "#2d4b3f",
+                    "inverse-surface": "#30312e",
+                    "on-surface": "#1b1c19",
+                    "surface-container-low": "#f5f3ee",
+                    "tertiary-container": "#504335",
+                    "on-tertiary-fixed": "#241a0e",
+                    "outline-variant": "#c1c8c3",
+                    "tertiary": "#392d20",
+                    "primary-fixed-dim": "#adcebe",
+                    "secondary-container": "#e4e2e2",
+                    "secondary": "#5e5e5e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader", "serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Inter", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .serif-italic { font-family: 'Newsreader', serif; font-style: italic; }
+        .navigation-label { font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 w-full z-50 bg-[#fbf9f4] dark:bg-stone-950">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-serif font-bold text-[#163429] dark:text-emerald-500">CraveCheck</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="navigation-label text-[#163429] font-bold border-b-2 border-[#163429] pb-1 transition-all opacity-80" href="#">Feed</a>
+<a class="navigation-label text-stone-500 dark:text-stone-400 font-medium hover:text-[#163429] dark:hover:text-emerald-400 transition-colors" href="#">Insights</a>
+<a class="navigation-label text-stone-500 dark:text-stone-400 font-medium hover:text-[#163429] dark:hover:text-emerald-400 transition-colors" href="#">Community</a>
+</div>
+<div class="flex items-center space-x-4">
+<div class="hidden sm:block relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-sm focus:ring-1 focus:ring-primary w-64" placeholder="Search culinary science..." type="text"/>
+</div>
+<span class="material-symbols-outlined text-primary cursor-pointer">account_circle</span>
+</div>
+</div>
+<div class="h-px w-full bg-[#f5f3ee] dark:bg-stone-900"></div>
+</nav>
+<div class="flex max-w-7xl mx-auto pt-20">
+<!-- SideNavBar (Left) -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-80px)] w-80 p-6 space-y-8 sticky top-20">
+<div class="space-y-1">
+<h2 class="font-serif text-xl text-[#163429] italic">Discovery</h2>
+<p class="font-sans text-sm text-stone-500">Explore the depth of food science</p>
+</div>
+<nav class="flex flex-col space-y-2">
+<a class="flex items-center space-x-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:bg-[#f5f3ee] dark:hover:bg-stone-900 hover:pl-2 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="text-sm font-sans">Analytics</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:bg-[#f5f3ee] dark:hover:bg-stone-900 hover:pl-2 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="text-sm font-sans">Scientific Methodology</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:bg-[#f5f3ee] dark:hover:bg-stone-900 hover:pl-2 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="text-sm font-sans">Saved Posts</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:bg-[#f5f3ee] dark:hover:bg-stone-900 hover:pl-2 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-sans">Settings</span>
+</a>
+</nav>
+<div class="mt-auto p-4 bg-surface-container-low rounded-xl">
+<p class="text-[11px] uppercase tracking-widest text-stone-500 mb-2">Editor's Pick</p>
+<h3 class="font-serif italic text-primary leading-tight">The Gut-Brain Axis: Why your breakfast affects your mood.</h3>
+</div>
+</aside>
+<!-- Main Feed Canvas -->
+<main class="flex-1 w-full mx-auto px-4 py-8 space-y-12">
+<!-- Nutrition Slate (Global Context) -->
+<section class="max-w-5xl mx-auto bg-surface-container-high p-8 rounded-xl flex justify-between items-center">
+<div class="space-y-1">
+<p class="navigation-label text-secondary">Today's Cumulative Intake</p>
+<h2 class="font-serif text-3xl font-bold text-primary">Wellness Dashboard</h2>
+</div>
+<div class="flex space-x-8">
+<div class="text-center">
+<p class="font-serif text-2xl font-bold text-primary">1,420</p>
+<p class="navigation-label text-secondary">Kcal</p>
+</div>
+<div class="text-center border-l border-outline-variant/30 pl-8">
+<p class="font-serif text-2xl font-bold text-primary">82g</p>
+<p class="navigation-label text-secondary">Protein</p>
+</div>
+</div>
+</section>
+<!-- Feed Grid: Strictly 2 posts in a row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 max-w-5xl mx-auto">
+<!-- Post 1: Good -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="Dr. Julian Thorne" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDst6WRrWZRHoNvHcPUyiQ_8lkRa_sHK9dKFNDLf1PlUMNBOTcZsD3fLBR8B-tD1vZQ1_CcRW4fjOWgXWygSVEIpEd4aM4YZd5NjdPOa2-SJ8dpfdLwAv4LzfGWgS-WShUrAUCtB_tECEjLabXu2dbgWUrrppWnyN2neFtaAFhAqEpl0kJpH-wcewj9WUw34_wXHZUMDVKIQ9fyN7SPZsqegf-RcIVsowWcYzShdYJxw456Vwfdqvh1aMoqXENy2nmFDlQm78bjsa7h"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">Dr. Julian Thorne</p>
+<p class="text-xs text-secondary italic">Nutritional Science</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Salmon salad with avocado" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxa9rRMK5TgUKGCIPTwpK_YTgDwSuttNaQNH6VScS_yQ7hrkv_7Z568VejWI39YkNg08Mr30qE1exGD1NlZKEklOzmhN2SBqNnMRJAOs11N7OVeKaeqf9t0NGVW0UbjzbhRyDVpV_tpNKk6MTVehRVLNDEGwwS0to6-cG0nr_gNDeTDlxRDRFyHYjE8_lssw-LmTAhayxjtlWfPBaqbBHLSNsBnVRNJg2e2EYl_j21PGjrZM1lZ9qVmGi8M-_0if6eGJtkbUx12XDk"/>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<span class="text-[11px] font-bold text-primary">482 kcal</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">8.2k verified</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">The Bioavailable Bowl</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">Wild-caught salmon and brassica medley maximizes sulforaphane absorption for cellular health. 🌿</p>
+</div>
+</div>
+</article>
+<!-- Post 2: Misleading -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="FitVibe_Josh" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2CIZvQcUMIQDzIH68AwmlPd-dAhplL5GL4ZURW93cMuPxwmBa5z9uZ5T4ThFeZbFdwFIlJk4xpL33_wH1XbU-skj6i2dtj699jFM1iKeFTKl3KOaZtSed46KBQ1zMb3g7ilAy_Rqt8g_3pH602oKqrIZQe3xc9ZPbcZhZBB6jhYkCKesj9JMQ-0alTG7l-Ws92DTRnwcjahi6B8LWctJpKl_XJNpt3c7O9UispW6dBLTm88p_-SAVFt45FmaM2TnpLwAhZiSh3ykh"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">FitVibe_Josh</p>
+<p class="text-xs text-secondary italic">Lifestyle Guru</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Oversized colorful donuts" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1Dr9op_EeM09avdPtvrGe-rUqznHYTpHzyDjFA2Nk-EbyYG3DIq9HFCkJUd_zpOT7mhJTH8rkSUJBKhOY2kaASL4FVeDzoKjWltcQomaLtcET-vf36KgbPjWDOUgP4XipDMXJ1YTqjNa-MpffYJBMVDnF4huLykjVrhCg45F-80eWQpGDXrL7j0OsPh5jFAWrPnlyP9opiLG1aVG4DZptV84Ubh7hyHT8lMjZ7kPNRlFpqM3FXIWKCv3Bra0lQRzP0gJT4INBAicY"/>
+<div class="absolute top-4 left-4 bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Viral Myth</div>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="text-[11px] font-bold text-primary">Sugar Spike</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-error font-bold">4.2m trending</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">Guilt-Free Chocolate Mountain!</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">"Lose 10lbs in 2 days with this miracle dessert hack!" No sugar, just pure vibes. 🔥🍩</p>
+</div>
+</div>
+</article>
+<!-- Post 3: Misleading -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="GlowByGemma" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDScT4jn4bQt3NEzItADIMy4mUbyOPt2cL9iO69gasmCNJa83cEpppKGd310mav4k9JoLAcYTe8wAS7JBR8eapG25D_yQQK_spyy1Ne67PJ58iVZG-MLonPuJ5KzUghEuSGCRYEtmPFN2841mq1UndbnuWOA1my-NvzS7CuEmJjCR9xJNbHjTvlTbAXPdkt7QaNIXvmLdJQnH-TVqA-PAKeP1hg5w5vWHJIrGff8IW00FPyT3vhh4yT7xKVswd0e-tiKPsyUiWq0xX7"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">GlowByGemma</p>
+<p class="text-xs text-secondary italic">Beauty &amp; Wellness</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Pink sparkling drink in a glass bottle" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUto4k8oy_NuGj6yF6HglAc1crDWUvltQwAbW2Pyy3ezIEqk37dZXo9UApi2JG4QlAkELPQ7j-VsawEV9CCwppV8X7nlV7IfymqenltCyEd9xgOn6jwEf99yez0EqSdpmDpOlGn14aGDOZxq8V1bPwV3xdZI_SiJT3zsXtmqUVwD3vjCXXouqz3LszmAeChYq-kdwtjLOFQ8hQ7TrxYDYY0BnRmXQDeKqtiSaapdofJWUGp98ewYaKq69x4J4ajZS3trXSMrYCfuTL"/>
+<div class="absolute top-4 left-4 bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Misleading</div>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">local_drink</span>
+<span class="text-[11px] font-bold text-primary">Detox Cure</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">2.1m views</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">The 24-Hour Metabolism Flush</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">"This pink water literally melts fat while you sleep." Science-backed? No. Trending? Absolutely. 💖✨</p>
+</div>
+</div>
+</article>
+<!-- Post 4: Good -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="Chef Andre" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFayX-5pxmWu2G2XLJzWtltJaTgy-oISYQDm0K0a1ySEzDRcQemEoFdji6pVcHE-1e_5qd0Nbps_2Wg8EvmnPF0OY9LYwtGZYuA14eD5Hnisz1rrxVoT0j3benBJHmiDiGFNM6l3F54MRdeP0fYhOtODscsMT6CKmuiffYhm_T8xOTzYv_yk9ogY-q5EG4nPG0iuI0DhQyBhoRLagL5n6fk2StEc9iEvr-pKPvU5HSyPPuDQw_d38osfTaySTbwkkKlkyEZI0cPmbh"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">Chef Andre L.</p>
+<p class="text-xs text-secondary italic">Culinary Science</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Authentic fermented tempeh dish" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH6UK9bl5vKRuoa7gpvWy5E9C6ARizeZ54gE-TcTurvGXpFWmyCc3afqJZGn2jOmcltte9JK4CnE1NzjI6Dk2ZtHguopVdmDJUniXkNIBaD_-TNryHir2ATZhZeniCP_DZp2Gdsqe4dXSdOKfdmsYM9fXPzSleRu1184sDN5p3V3Dzx7Sxmu0hzqIVyRcd0fobXwq3uI1a1Cu2F4L9XpYloxIuxp-4MCEcH70bfkds_kXo8z7yZd8B_h2rLYCrIw0pP5YQ9t9a86Xj"/>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">psychiatry</span>
+<span class="text-[11px] font-bold text-primary">Gut-Brain Link</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">1.2k analyzed</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">Fermentation for Gut Health</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">Authentic tempeh fermentation processes create bioactive peptides that support neurotransmitter synthesis. 🫘</p>
+</div>
+</div>
+</article>
+<!-- Post 5: Misleading -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="FoodieFantasy" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASE3Ev0pCGrMiIY-FFYzXdSzMiIgdVpbeaIWRkFBHYZgx32-iJ9d47Q110R2dIRmwNsrxkS1wAmb-J0pX4S4QeSooA17ttig7iHZ3Rc32dkyoEbZ7CD8yZlsCxySgaIquZIZ_-T378ooFVm8AVafkiTKFz3_5tunpBG9ZwDbeFSppn6LpQK9gzuEpH2oLUi0B0aBCAByS67nPvA5EHD_jIlbQ31UTIEC4DA-jDLNFbyKrFKNFXFIkwA1o4nBdMd2iaVo-h9KvzIf8U"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">FoodieFantasy_99</p>
+<p class="text-xs text-secondary italic">Viral Trends</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Multi-colored processed bagels" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyZgvJ13aFGp-Ce1DxM6OtL_WSgwBzmVdlCxWunY4EkFnX-mRppDJkue8b17AtYaR1AljRSHPcEAPyNs6Vx32D4ZJEVOgsYNvM-twsX2xQiA0AqevMWGAD9AnZKL3yiTjBxtDl4SD3qgcUdTYsNhHeb4hV7pfAvzQk7qnN-Y2rm2A-KAJ43bNs26_S596-tXzl8rFLwEJ4e1VPFXAPJcN2Xa5ewFkIOtD7Iw0r6Ha0T2En7HJYtsVcFJnf1Y9LiOVIgZ8folLhsC9y"/>
+<div class="absolute top-4 left-4 bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Viral Myth</div>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-error" style="font-variation-settings: 'FILL' 1;">color_lens</span>
+<span class="text-[11px] font-bold text-primary">Dye-Heavy</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">5.8m saves</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">Magical Rainbow Energy Bagels!</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">"Tastes like a dream and cures morning blues!" Packed with synthetic dyes and zero nutritional fiber. 🥯🌈</p>
+</div>
+</div>
+</article>
+<!-- Post 6: Good -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="Dr. Kevin Wu" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACI2_EBJ3nxbSac9Aa-Mu83xW_Lg4LchqWDEofJHaWUcmPxnxKGVXOJWxv92RJfW1ASultcln6svUMR3FGNpcCWvDvUYDfIRhWi37GIOAecOICMJ3wSWzxZLl3yPpWcWd3zSiwruzAQSVVsLkAPP5l1-xzqkUczqbSefCBNubjRAYLg1xtPLurCLsNjPLyz-XH3kb3ZkvAaYvEItvXMhPMHurhdBiskcYyPv_npRfBDeEU1Pv1ns5p6R3FzoR5vsFUzDHsl4yzj2_d"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">Dr. Kevin Wu</p>
+<p class="text-xs text-secondary italic">Chronobiology</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Hearty oatmeal bowl with berries" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEyxnja2Rji1Zx8n2VZFTG9Rddfg4oX-FPZaIW-dAlKJemGpyPGWTNAwbZ-ODl99B7yruNEhnsoAxVQZY393d8ApLlUdcg4CvecEST5bSFI94ukPQ4s3cqyDVSEbSPVZgO4RHbvLwqG7tZEJTwvVkSJPsrv-7_iMTSf3UvXbFkPrYZbOXzbDErlwmdb7eFzGl2FHpECXXYH7bgQojQc0zQl8vB2XgWMIgbr04GS82u1qclGASNS0xburMkQlvhQXLQmQ5YzGV4EYCJ"/>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<span class="text-[11px] font-bold text-primary">Slow Burn</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">4.2k peer reviewed</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">Circadian Fueling</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">Beta-glucans in overnight oats for sustained morning focus and stable insulin response. 🥣</p>
+</div>
+</div>
+</article>
+<!-- Post 7: Misleading -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="KitchenKing" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMjcu7O0D3vQJORQCiwYcxXPLOf1oJxjE85j53zgD_oWY74MD8IGoocTTovfXgepdvo7JNhfLgXAZvnNx5ZUJcdc5c862ROeBz7MHX8eqheaDTk4Oubdyno9rjvV8xru29H5iATJT4w7hSdVIxdvXRqYoobmbeNBqqoYimsW6PRQHgDEt8gCh_tPF9UDQYIhVjrxOvdpftXEU2iWksSiEpa5BQNaFPXn8HnQzgQdgat7pqEeiU8bzFOiUcuDbSz8ZQrmDGCKcO47YA"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">KitchenKing_Official</p>
+<p class="text-xs text-secondary italic">Short-Form Chef</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Massive greasy burger with cheese" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQiamcL6AplwIVDD0O4-Pni1ovi_v3hil8j13ogk0QdMmN6UcLz9sIGCfFlOWa_7_qev8co6WgRNH0Q7Lrr1uE32bDBNtbO6Ji4S-8tR7_O3I0sjXDzirxDxR3e1P-23pNnp1Pcd0mefCJE5XumWdD0Ul5qKa-ssHTziy4njs1NCK__BExiZe-Y5LwOYgk7foEQz3bIKuZeeOTzL4rbp-21ZlJoxo6H_quVem2OzKHidGmPuZk4c5x-OeEnRU8o3IAkIc_KSciA2Ym"/>
+<div class="absolute top-4 left-4 bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Viral Myth</div>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-error" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+<span class="text-[11px] font-bold text-primary">Sodium Overload</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">15m likes</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">10-Min Deep Fried Burger!</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">"The ultimate cheat meal that actually speeds up your metabolism because of the heat!" Pure culinary fiction. 🍔🔥</p>
+</div>
+</div>
+</article>
+<!-- Post 8: Good -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="Maya Patel" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4QomrzkR7qkI7H8kr94wRX7sslOJw2BuGKQH4lHQcQlD3hEcNLqJjs91q5lejzijElQXOjH6nJpHKKT63yM6L6QQjL8zzHZ45XpB3B9TcFSNcJEMZ7VhIIRKEbMUTtCz9MQxGSsimxJbyhP80C8HDlNT2xZqmfxP9nI6g_GtPYUuPr93Zg5TvDlI0ABrzx_rSvpAtIi4WLA2p1v0vRATGPVITr6ZoNsrFJHc9Ek2-wCEslFQx7r_5apGuhgeiw4uxMDd0rnZ88yDv"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">Maya Patel</p>
+<p class="text-xs text-secondary italic">Nutrigenomics</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Selection of citrus and grapes" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ6J9jk2bmWxAFR0mCTIYgt94CzlJZTDSzmKtvf9-_9jQPp9_C99q3TIMHcqFJs3rY7eKXkUwBvk06Xv-BKZp99oeTOcRNxw9ls-p6en7nFF5KHNpgfeUApU02aE7ujDkz_jCYbZTUA1WXCPSMW61pVfsmyOljrer9BIRBOPQkJy5cRTMdL_pfULHV-LqwNZ9LhCeRyWUpQhYlGOTWEixP973y423CFr0tKfc-7YT1qyYxSDkwnNaHbW11jK5EFpBIkXHZoJ9Pdk2t"/>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">brightness_7</span>
+<span class="text-[11px] font-bold text-primary">Vitamin C+</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">7.1k studies</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">Polyphenol Rainbow</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">Phytochemical diversity for DNA protection and repair. Science-backed antioxidants. 🍓</p>
+</div>
+</div>
+</article>
+<!-- Post 9: Misleading -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="Sam Rivers" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1MNGsp0_cI9tBrmEmvDKaNtIeGeC_4f4iRIacDgXsejuO7vVIAJfE41lfgOrj6N93SUD0xRgqBKboKP3sfr7Aa2vpFVcMWFh07u5Yw1nsaG5fclKP856t_YTpYh9Hu-JYLv_gQuz8W1hk67d8LxcV8JSSPsiFOW1tsIFG-DOqXRIyV0xAI5dlDlM8uDCxID64-Im8DwOPU0v3IMd0LhclQQYSEAqqjeTrJiriyE_vOht3Wqi_KapwkO2VwiPrzxaw99OWqzJKx6jr"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">Dr. Sam Rivers (Not MD)</p>
+<p class="text-xs text-secondary italic">BioHacker</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Fruity cocktail or juice with high syrup content" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHpmkEBzvFiBa_3bK38HS3pVKkYILE6xZ2ms9yiWEbSAy3ppi7IkNStFU_pP2a5kg1V5vXPYMMfKEYNQ87FHHuajZFKaFYrML2h4IfAfTm_W0o0qRS0Vp56zlZSNLGgfKjc5ZuTPsLjaamNcXrO31n5d6m41eW3O4HeowbXkGDS3erHLb-J2KGWD_Iz2Dx-X2-C6twA-P4DAbcGZCf4cpBCDf6_DHVgSTBJfRJc9ExMRqaMHg-RahmImdBDU-eOn7ksNkW9h2ZnLur"/>
+<div class="absolute top-4 left-4 bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Misleading</div>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-error" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-[11px] font-bold text-primary">High Fructose</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">300k shares</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">Infinite Brain Energy Hack</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">"This one secret juice unlocks 100% of your brain capacity." It's just overpriced fruit syrup. 🧠⚡</p>
+</div>
+</div>
+</article>
+<!-- Post 10: Misleading -->
+<article class="space-y-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="Chloe Zhang" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_BxPMwdkZhOgqfVGMBzCN9SWD4UXdboK0fm2-gDSP1Vz5a43x8UB49fr6Ee3Y4d8OFuFznxAZaf4EOlBRPtfa5M3kDehuytRR_jqwtrgC715JpI7pTHv0RqqzIAAaMIGHqcMBlckD6UwtmXqIbtPqylEoqP1pNkb9qEtqn-tY94FlU6783vxJ473uw6vNH2hkHDJiIHv52DPrhE8xir5zWkb92fpn6pY_CJMouGkOOejHW7kOtenNkmg-OpgvXogoMPvOVF7U5_Ah"/>
+</div>
+<div>
+<p class="font-sans font-bold text-sm text-on-background">Chloe Zhang</p>
+<p class="text-xs text-secondary italic">Influencer</p>
+</div>
+</div>
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">more_horiz</span></button>
+</header>
+<div class="relative rounded-xl overflow-hidden shadow-sm">
+<img alt="Fancy ice cream sundae" class="w-full aspect-[4/5] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwFH1BuGUIWaHfOntjE5Ifv7sfji68NXARbn3R8hqFrIi0wiGoWpRVli4QTVNOaTjRk7Ro3mE_8LqcJItqdB4bgHkalsTxuWYOJWJHwT7vEoGUotkQ5G1o2bLbv9AtaUCeWN0gx8LAtbFx9FMxP5LT3oKWfxS0WdP1OcD6WWAWJcHOA7gOIqSqhLpZ0i2ne5AOQDeNvM-jk3WVpdrSiNBqls3nhRlVdIU0lsZJQQ6OT5jjVPSrzZBubI36lQlzdK0KSWvIa-dP1KVQ"/>
+<div class="absolute top-4 left-4 bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Misleading</div>
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">mood</span>
+<span class="text-[11px] font-bold text-primary">Zero Fiber</span>
+</div>
+</div>
+<div class="space-y-3 px-1">
+<div class="flex items-center justify-between">
+<div class="flex space-x-4">
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-all"><span class="material-symbols-outlined text-[16px]">thumb_up</span></div>
+<span class="navigation-label text-secondary group-hover:text-primary">Would Eat</span>
+</button>
+<button class="flex items-center space-x-2 group">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center group-hover:bg-error-container group-hover:text-on-error-container transition-all"><span class="material-symbols-outlined text-[16px]">close</span></div>
+<span class="navigation-label text-secondary group-hover:text-on-error-container">Pass</span>
+</button>
+</div>
+<span class="text-[10px] font-sans text-secondary">9.4k saves</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-serif text-xl text-primary font-bold">The Anti-Aging Sundae</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-2">"Gold flakes and magic berries make this a wellness staple." Expensive sugar, essentially. 🍦✨</p>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- Right Column (Sidebar Extras) -->
+<aside class="hidden xl:flex flex-col w-80 p-6 sticky top-20 h-fit space-y-8">
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4">
+<p class="navigation-label text-secondary">Trending Myths</p>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-sm font-sans">#MetabolismFlush</span>
+<span class="text-xs text-error">Extreme</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-sans">#RainbowDietMagic</span>
+<span class="text-xs text-secondary">Viral</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-sans">#DetoxCures</span>
+<span class="text-xs text-secondary">Rising</span>
+</div>
+</div>
+</div>
+<div class="p-6 border border-outline-variant/20 rounded-xl space-y-3">
+<p class="navigation-label text-secondary">Analysis Stats</p>
+<div class="flex items-baseline space-x-2">
+<span class="font-serif text-3xl font-bold text-primary">60%</span>
+<span class="text-xs text-secondary">Viral Misinformation</span>
+</div>
+<p class="text-xs text-on-surface-variant italic leading-snug">
+                "Identifying the difference between a trend and nutrition is the first step to longevity."
+            </p>
+</div>
+</aside>
+</div>
+<!-- Footer -->
+<footer class="mt-20 bg-[#f5f3ee] dark:bg-stone-900 border-t border-stone-200/20">
+<div class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto">
+<p class="font-sans text-xs tracking-tight text-stone-500 dark:text-stone-400">© 2024 CraveCheck Editorial. All rights reserved.</p>
+<div class="flex space-x-8 mt-6 md:mt-0">
+<a class="font-sans text-xs text-stone-500 hover:text-[#163429] transition-colors" href="#">Privacy Policy</a>
+<a class="font-sans text-xs text-stone-500 hover:text-[#163429] transition-colors" href="#">Terms of Service</a>
+<a class="font-sans text-xs text-stone-500 hover:text-[#163429] transition-colors" href="#">Scientific Disclosure</a>
+</div>
+</div>
+</footer>
+</body></html>

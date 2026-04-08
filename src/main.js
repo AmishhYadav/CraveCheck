@@ -10,9 +10,55 @@ document.addEventListener('DOMContentLoaded', () => {
   let completedPosts = 0;
   const TOTAL_POSTS = feedData.length;
   let surveyData = [];
-  let userChoices = []; // Track user decisions for ML comparison
+  let userChoices = [];
 
-  // Super simple CSV parser
+  // ─── Scroll-driven hero animation ───
+  const heroMedia = document.getElementById('hero-media-card');
+  const titleLeft = document.getElementById('split-title-left');
+  const titleRight = document.getElementById('split-title-right');
+  const heroContent = document.getElementById('hero-content');
+  const heroOverlay = document.getElementById('hero-overlay');
+
+  if (heroMedia) {
+    window.addEventListener('scroll', () => {
+      const scrollPercent = Math.min(window.scrollY / (window.innerHeight * 1.5), 1);
+      const width = 40 + (scrollPercent * 60);
+      const height = 60 + (scrollPercent * 40);
+      const borderRadius = 12 - (scrollPercent * 12);
+
+      heroMedia.style.width = `${width}vw`;
+      heroMedia.style.height = `${height}vh`;
+      heroMedia.style.borderRadius = `${borderRadius}px`;
+
+      const moveDist = scrollPercent * 40;
+      if (titleLeft) {
+        titleLeft.style.transform = `translateY(-50%) translateX(-${moveDist}vw)`;
+        titleLeft.style.opacity = Math.max(0, 1 - scrollPercent * 1.5);
+      }
+      if (titleRight) {
+        titleRight.style.transform = `translateY(-50%) translateX(${moveDist}vw)`;
+        titleRight.style.opacity = Math.max(0, 1 - scrollPercent * 1.5);
+      }
+
+      if (scrollPercent > 0.8) {
+        if (heroContent) { heroContent.style.opacity = '1'; heroContent.style.transform = 'translateY(0)'; }
+        if (heroOverlay) { heroOverlay.style.opacity = '1'; }
+      } else {
+        if (heroContent) { heroContent.style.opacity = '0'; heroContent.style.transform = 'translateY(20px)'; }
+        if (heroOverlay) { heroOverlay.style.opacity = '0'; }
+      }
+    });
+  }
+
+  // ─── Reveal Sections on Scroll ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal-section').forEach(s => observer.observe(s));
+
+  // ─── CSV Parser ───
   const parseCSV = (text) => {
     const lines = text.trim().split('\n');
     const headers = lines[0].split(',').map(h => h.trim());
@@ -27,31 +73,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }).filter(obj => obj['Age Group']);
   };
 
+  // ─── Baseline Score ───
   const getBaselineForAge = (ageGroup) => {
-    const demographicProfiles = surveyData.filter(p => p['Age Group'] === ageGroup);
-    if (!demographicProfiles.length) return 50; // fallback
-
+    const profiles = surveyData.filter(p => p['Age Group'] === ageGroup);
+    if (!profiles.length) return 50;
     let totalScore = 0;
-    demographicProfiles.forEach(p => {
+    profiles.forEach(p => {
       let score = 0;
-      
-      // Nutrition check
       const checks = p['Do you usually check nutritional information before eating?'];
       if (checks === 'Always') score += 30;
       else if (checks === 'Sometimes') score += 15;
       else if (checks === 'Rarely') score += 5;
 
-      // Behavior reduction
       const reduce = p['After seeing the health impact prediction, would you reduce frequent consumption?'];
       if (reduce === 'Yes') score += 30;
       else if (reduce === 'Maybe') score += 15;
 
-      // Surprise baseline (not surprised = more aware)
       const surprised = p['Were you surprised by the nutritional facts shown?'];
       if (surprised === 'Not surprised') score += 20;
       else if (surprised === 'Slightly surprised') score += 10;
 
-      // Craving impulse control
       const craving = p['Have you ever craved food after watching a food reel?'];
       if (craving === 'Never') score += 20;
       else if (craving === 'Rarely') score += 15;
@@ -59,10 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       totalScore += score;
     });
-
-    return Math.round(totalScore / demographicProfiles.length);
+    return Math.round(totalScore / profiles.length);
   };
 
+  // ─── ML Prediction ───
   const predictWouldEat = (features) => {
     let logOdds = 1.6083;
     logOdds += (features.age_group || 0) * -0.5061;
@@ -72,16 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
     logOdds += (features.dietary_preference_non_vegetarian || 0) * 0.2564;
     logOdds += (features.dietary_preference_vegan || 0) * -0.3853;
     logOdds += (features.dietary_preference_vegetarian || 0) * 0.4096;
-
     const probability = 1 / (1 + Math.exp(-logOdds));
-    return {
-        prediction: probability >= 0.5 ? "Would Eat" : "Pass",
-        probability: probability
-    };
+    return { prediction: probability >= 0.5 ? "Would Eat" : "Pass", probability };
   };
 
-  // ----- Richer demographic analysis from dataset -----
-
+  // ─── Demographic Insights ───
   const getDemographicInsights = (ageGroup) => {
     const profiles = surveyData.filter(p => p['Age Group'] === ageGroup);
     const allProfiles = surveyData;
@@ -90,13 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const count = (arr, key, val) => arr.filter(p => p[key] === val).length;
     const pct = (c, total) => total > 0 ? Math.round((c / total) * 100) : 0;
 
-    // Craving frequency breakdown
     const cravingFreq = {};
     ['Very often', 'Often', 'Sometimes', 'Rarely', 'Never'].forEach(v => {
       cravingFreq[v] = pct(count(profiles, 'Have you ever craved food after watching a food reel?', v), profiles.length);
     });
 
-    // What attracts them most
     const attractors = {};
     profiles.forEach(p => {
       const raw = p['When watching food reels, what attracts you most?'] || '';
@@ -105,11 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     const topAttractors = Object.entries(attractors)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
+      .sort((a, b) => b[1] - a[1]).slice(0, 3)
       .map(([name, c]) => ({ name, pct: pct(c, profiles.length) }));
 
-    // Emotional reaction
     const emotions = {};
     profiles.forEach(p => {
       const e = p['Which emotion best describes your reaction to viral food videos?'] || '';
@@ -117,54 +149,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const topEmotion = Object.entries(emotions).sort((a, b) => b[1] - a[1])[0];
 
-    // Nutrition check habits  
     const checkNutrition = {};
     ['Always', 'Sometimes', 'Rarely', 'Never'].forEach(v => {
       checkNutrition[v] = pct(count(profiles, 'Do you usually check nutritional information before eating?', v), profiles.length);
     });
 
-    // Would reduce after seeing health impact
     const wouldReduce = pct(count(profiles, 'After seeing the health impact prediction, would you reduce frequent consumption?', 'Yes'), profiles.length);
     const maybeReduce = pct(count(profiles, 'After seeing the health impact prediction, would you reduce frequent consumption?', 'Maybe'), profiles.length);
-
-    // Were they surprised
     const surprised = pct(count(profiles, 'Were you surprised by the nutritional facts shown?', 'Very surprised'), profiles.length);
     const slightlySurprised = pct(count(profiles, 'Were you surprised by the nutritional facts shown?', 'Slightly surprised'), profiles.length);
 
-    // Social media usage
     const smUsage = {};
     ['Less than 1 hour', '1-2 hours', '3-4 hours', 'More than 4 hours'].forEach(v => {
       smUsage[v] = pct(count(profiles, 'Average daily social media usage', v), profiles.length);
     });
     const highUsage = (smUsage['3-4 hours'] || 0) + (smUsage['More than 4 hours'] || 0);
 
-    // Food reel frequency
     const seesOften = pct(
       count(profiles, 'How often do you see food related posts/reels?', 'Very often') +
       count(profiles, 'How often do you see food related posts/reels?', 'Often'),
       profiles.length
     );
 
-    // Diet split
     const dietSplit = {};
     ['Vegetarian', 'Non-vegetarian', 'Vegan'].forEach(v => {
       dietSplit[v] = pct(count(profiles, 'Dietary Preference', v), profiles.length);
     });
 
     return {
-      sampleSize: profiles.length,
-      totalDataset: allProfiles.length,
-      cravingFreq,
-      topAttractors,
+      sampleSize: profiles.length, totalDataset: allProfiles.length,
+      cravingFreq, topAttractors,
       topEmotion: topEmotion ? { name: topEmotion[0], pct: pct(topEmotion[1], profiles.length) } : null,
-      checkNutrition,
-      wouldReduce,
-      maybeReduce,
-      surprised,
-      slightlySurprised,
-      highUsage,
-      seesOften,
-      dietSplit
+      checkNutrition, wouldReduce, maybeReduce, surprised, slightlySurprised,
+      highUsage, seesOften, dietSplit
     };
   };
 
@@ -179,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const smMap = {'Less than 1 hour': 1, '1-2 hours': 2, '3-4 hours': 3, 'More than 4 hours': 4};
       const nutMap = {'Never': 1, 'Rarely': 2, 'Sometimes': 3, 'Always': 4};
       const unhealthyMap = {'Disagree': 1, 'Neutral': 2, 'Agree': 3};
-      
       const features = {
         age_group: ageMap[p['Age Group']] || 2,
         average_daily_social_media_usage: smMap[p['Average daily social media usage']] || 2,
@@ -189,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
         dietary_preference_vegan: p['Dietary Preference'] === 'Vegan' ? 1 : 0,
         dietary_preference_vegetarian: p['Dietary Preference'] === 'Vegetarian' ? 1 : 0
       };
-
       const result = predictWouldEat(features);
       totalProb += result.probability;
       predictions.push(result);
@@ -203,55 +218,46 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   };
 
-  // Per-post NLP analysis generator using ML + dataset context
+  // ─── NLP Analysis Generator ───
   const generateNLPAnalysis = (post, ageGroup) => {
     const insights = getDemographicInsights(ageGroup);
     const ml = getMLPredictionForAge(ageGroup);
     const mlPct = Math.round(ml.avg * 100);
-    
     const calories = parseInt(post.realView.nutrition.calories);
     const sugar = parseInt(post.realView.nutrition.sugar);
     const fat = parseInt(post.realView.nutrition.fat);
     const bias = post.realView.biasScore;
 
-    // Calorie risk level
     let calorieRisk = 'moderate';
     if (calories > 1000) calorieRisk = 'extreme';
     else if (calories > 700) calorieRisk = 'high';
     else if (calories < 400) calorieRisk = 'low';
 
-    // Sugar analysis
-    const dailySugarLimit = 25; // WHO recommendation in grams
+    const dailySugarLimit = 25;
     const sugarRatio = Math.round((sugar / dailySugarLimit) * 100);
 
-    // Build analysis sections
     const sections = [];
 
-    // 1. Caption manipulation analysis
     sections.push({
-      title: 'Caption Manipulation',
-      icon: '🎭',
+      title: 'Caption Manipulation', icon: '🎭',
       content: post.realView.aiTactics,
       severity: bias > 85 ? 'critical' : bias > 70 ? 'warning' : 'info'
     });
 
-    // 2. Calorie context
     const avgMealCal = 600;
     const mealEquiv = (calories / avgMealCal).toFixed(1);
     sections.push({
-      title: 'Calorie Context',
-      icon: '🔥',
+      title: 'Calorie Context', icon: '🔥',
       content: `This single item contains <strong>${calories} calories</strong> — equivalent to <strong>${mealEquiv} full meals</strong>. ` +
         (calorieRisk === 'extreme' ? 'This exceeds half the daily recommended intake in one serving.' :
          calorieRisk === 'high' ? 'This is significantly above a healthy single-meal threshold.' :
+         calorieRisk === 'low' ? 'This is within a healthy range for a light meal or snack.' :
          'This is within a reasonable range for a main meal.'),
       severity: calorieRisk === 'extreme' || calorieRisk === 'high' ? 'critical' : 'info'
     });
 
-    // 3. Sugar alert
     sections.push({
-      title: 'Sugar Impact',
-      icon: '🍬',
+      title: 'Sugar Impact', icon: '🍬',
       content: `Contains <strong>${sugar}g of sugar</strong> — that's <strong>${sugarRatio}%</strong> of the WHO daily limit (${dailySugarLimit}g) in a single serving. ` +
         (sugarRatio > 200 ? 'This is dangerously excessive.' :
          sugarRatio > 100 ? 'This alone exceeds the full daily recommended sugar intake.' :
@@ -259,12 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
       severity: sugarRatio > 200 ? 'critical' : sugarRatio > 100 ? 'warning' : 'info'
     });
 
-    // 4. ML-powered demographic prediction
     if (insights) {
       const cravingHigh = (insights.cravingFreq['Very often'] || 0) + (insights.cravingFreq['Often'] || 0) + (insights.cravingFreq['Sometimes'] || 0);
       sections.push({
-        title: 'Behavioral Prediction',
-        icon: '🤖',
+        title: 'Behavioral Prediction', icon: '🤖',
         content: `Our ML model (Logistic Regression, trained on ${insights.totalDataset} responses) predicts <strong>${mlPct}% of users in the ${ageGroup} group</strong> would crave this food. ` +
           `In the dataset, <strong>${cravingHigh}%</strong> reported craving food after reels. ` +
           (insights.topEmotion ? `The dominant emotional response is <strong>"${insights.topEmotion.name}"</strong> (${insights.topEmotion.pct}%).` : ''),
@@ -272,133 +276,191 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 5. Bias score breakdown
     sections.push({
-      title: 'Manipulation Score',
-      icon: '⚠️',
+      title: 'Manipulation Score', icon: '⚠️',
       content: `Bias score: <strong>${bias}/100</strong>. ` +
         (bias > 85 ? 'Extremely manipulative content — uses multiple psychological triggers to override rational food evaluation.' :
          bias > 70 ? 'Significant manipulation detected — caption framing actively distorts nutritional perception.' :
-         'Mild persuasive framing detected, but nutritional reality is not heavily obscured.'),
+         bias > 30 ? 'Mild persuasive framing detected, but nutritional reality is not heavily obscured.' :
+         'Low manipulation — this post presents largely honest nutritional information.'),
       severity: bias > 85 ? 'critical' : bias > 70 ? 'warning' : 'info'
     });
 
     return sections;
   };
 
+  // ═══════════════════════════════════════════════════════════
+  // RENDER FEED
+  // ═══════════════════════════════════════════════════════════
   const renderFeed = () => {
+    const age = sessionStorage.getItem('cravecheck_age') || '18-22';
+
     feedView.innerHTML = `
-      <div class="score-header" id="score-header">
-        <span class="score-label">Awareness Score</span>
-        <span class="score-value" id="score-value">${currentScore}</span>
+      <!-- Feed Nav -->
+      <nav class="feed-nav">
+        <div class="feed-nav-inner">
+          <div class="feed-nav-logo">CraveCheck</div>
+          <div class="feed-nav-meta">
+            <div class="feed-meta-item">
+              <div class="feed-meta-label">Cohort</div>
+              <div class="feed-meta-value">Age: ${age}</div>
+            </div>
+            <div class="feed-meta-divider"></div>
+            <div class="feed-meta-item">
+              <div class="feed-meta-label">Session</div>
+              <div class="feed-meta-value" id="progress-label">Progress: 0/${TOTAL_POSTS} posts</div>
+            </div>
+          </div>
+          <div class="score-badge" id="score-badge">
+            <span class="score-badge-label">Awareness</span>
+            <span class="score-badge-value" id="score-value">${currentScore}</span>
+          </div>
+        </div>
+      </nav>
+
+      <div class="feed-main">
+        <!-- Wellness Dashboard -->
+        <section class="wellness-dashboard">
+          <div>
+            <p class="wellness-info-label">Today's Feed Analysis</p>
+            <h2 class="wellness-info-title">Wellness Dashboard</h2>
+          </div>
+          <div class="wellness-stats-row">
+            <div class="wellness-stat">
+              <div class="wellness-stat-value">${TOTAL_POSTS}</div>
+              <div class="wellness-stat-label">Posts</div>
+            </div>
+            <div class="wellness-stat" style="border-left: 1px solid var(--outline-variant); padding-left: 32px;">
+              <div class="wellness-stat-value" id="score-display">${currentScore}</div>
+              <div class="wellness-stat-label">Score</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Feed Grid -->
+        <div class="feed-grid" id="feed-grid"></div>
       </div>
     `;
+
+    const feedGrid = document.getElementById('feed-grid');
+
     feedData.forEach((post, index) => {
       const postEl = document.createElement('article');
       postEl.className = 'feed-post';
       postEl.id = `post-${index}`;
+
+      const likesFormatted = post.likes >= 1000000 ? `${(post.likes / 1000000).toFixed(1)}m` :
+        post.likes >= 1000 ? `${(post.likes / 1000).toFixed(1)}k` : post.likes;
+
+      const isTrending = post.likes >= 1000000;
+
       postEl.innerHTML = `
+        <!-- Author Header -->
         <header class="post-header">
-          <img src="${post.avatarUrl}" alt="${post.authorName}" class="post-avatar" loading="lazy" />
-          <div class="post-author-info">
-            <h3 class="post-author-name">${post.authorName}</h3>
-            <span class="post-author-handle">${post.authorHandle}</span>
+          <div class="post-author">
+            <img src="${post.avatarUrl}" alt="${post.authorName}" class="post-avatar" loading="lazy" />
+            <div>
+              <div class="post-author-name">${post.authorName}</div>
+              <div class="post-author-handle">${post.authorHandle}</div>
+            </div>
           </div>
+          <button class="post-menu-btn"><span class="material-symbols-outlined">more_horiz</span></button>
         </header>
-        <div class="post-image-container" id="container-${index}">
+
+        <!-- Image Container (holds both reel and real views) -->
+        <div class="post-image-wrap" id="container-${index}">
           <!-- REEL VIEW (default) -->
           <div class="reel-face" id="reel-${index}">
-            <img src="${post.imageUrl}" alt="Post image" class="post-image" loading="lazy" />
-            <button class="btn-reveal" data-action="show-real" data-index="${index}" aria-label="Reveal Reality">
-              <svg viewBox="0 0 24 24" fill="none" class="icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <img src="${post.imageUrl}" alt="${post.authorName} post" class="post-image" loading="lazy" />
+            ${post.tag ? `<div class="post-tag">${post.tag}</div>` : ''}
+            ${post.badge ? `
+              <div class="post-badge ${post.badge.isError ? 'error-badge' : ''}">
+                <span class="material-symbols-outlined">${post.badge.icon}</span>
+                <span class="post-badge-text">${post.badge.label}</span>
+              </div>
+            ` : ''}
+            <button class="btn-reveal-real" data-action="show-real" data-index="${index}">
+              <span class="material-symbols-outlined">visibility</span>
               Real View
             </button>
           </div>
-          <!-- REAL VIEW (hidden initially) -->
-          <div class="real-face" id="real-${index}" style="display: none;">
+
+          <!-- REAL VIEW (hidden) -->
+          <div class="real-face" id="real-${index}">
             <div class="real-view-header">
               <button class="btn-back-reel" data-action="back-reel" data-index="${index}">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                Back to Reel
+                <span class="material-symbols-outlined" style="font-size:16px">chevron_left</span>
+                Back to Post
               </button>
               <span class="real-view-badge">Reality Check</span>
             </div>
-            
-            <div class="real-view-section">
-              <h4 class="section-title">Nutritional Facts</h4>
-              <div class="nutrition-grid">
-                <div class="nut-cell">
-                  <span class="nut-value">${post.realView.nutrition.calories}</span>
-                  <span class="nut-label">Calories</span>
-                  <span class="nut-context">${parseInt(post.realView.nutrition.calories) > 800 ? '⚠️ High' : parseInt(post.realView.nutrition.calories) > 500 ? '⚡ Moderate' : '✅ OK'}</span>
-                </div>
-                <div class="nut-cell">
-                  <span class="nut-value">${post.realView.nutrition.sugar}</span>
-                  <span class="nut-label">Sugar</span>
-                  <span class="nut-context">${parseInt(post.realView.nutrition.sugar) > 50 ? '⚠️ Excessive' : parseInt(post.realView.nutrition.sugar) > 25 ? '⚡ High' : '✅ OK'}</span>
-                </div>
-                <div class="nut-cell">
-                  <span class="nut-value">${post.realView.nutrition.fat}</span>
-                  <span class="nut-label">Fat</span>
-                  <span class="nut-context">${parseInt(post.realView.nutrition.fat) > 40 ? '⚠️ Very High' : parseInt(post.realView.nutrition.fat) > 20 ? '⚡ High' : '✅ OK'}</span>
-                </div>
+
+            <h4 class="section-title">Nutritional Facts</h4>
+            <div class="nutrition-grid">
+              <div class="nut-cell">
+                <span class="nut-value">${post.realView.nutrition.calories}</span>
+                <span class="nut-label">Calories</span>
+                <span class="nut-context">${parseInt(post.realView.nutrition.calories) > 800 ? '⚠️ High' : parseInt(post.realView.nutrition.calories) > 500 ? '⚡ Moderate' : '✅ OK'}</span>
+              </div>
+              <div class="nut-cell">
+                <span class="nut-value">${post.realView.nutrition.sugar}</span>
+                <span class="nut-label">Sugar</span>
+                <span class="nut-context">${parseInt(post.realView.nutrition.sugar) > 50 ? '⚠️ Excessive' : parseInt(post.realView.nutrition.sugar) > 25 ? '⚡ High' : '✅ OK'}</span>
+              </div>
+              <div class="nut-cell">
+                <span class="nut-value">${post.realView.nutrition.fat}</span>
+                <span class="nut-label">Fat</span>
+                <span class="nut-context">${parseInt(post.realView.nutrition.fat) > 40 ? '⚠️ Very High' : parseInt(post.realView.nutrition.fat) > 20 ? '⚡ High' : '✅ OK'}</span>
               </div>
             </div>
 
-            <div class="real-view-section">
-              <div class="healthy-alt-card">
-                <div class="healthy-alt-icon">🥗</div>
-                <div>
-                  <div class="healthy-alt-title">${post.realView.healthyAlternative.title}</div>
-                  <div class="healthy-alt-benefit">${post.realView.healthyAlternative.benefit}</div>
-                </div>
+            <div class="healthy-alt-card">
+              <div class="healthy-alt-icon">🥗</div>
+              <div>
+                <div class="healthy-alt-title">${post.realView.healthyAlternative.title}</div>
+                <div class="healthy-alt-benefit">${post.realView.healthyAlternative.benefit}</div>
               </div>
             </div>
 
-            <div class="real-view-section">
-              <button class="btn-analyze" data-action="analyze" data-index="${index}">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                Run AI & ML Analysis
-              </button>
-              <div class="nlp-analysis-container" id="nlp-${index}" style="display: none;">
-                <!-- Populated dynamically -->
-              </div>
-            </div>
+            <button class="btn-analyze" data-action="analyze" data-index="${index}">
+              <span class="material-symbols-outlined" style="font-size:18px">search</span>
+              Run AI & ML Analysis
+            </button>
+            <div class="nlp-analysis-container" id="nlp-${index}"></div>
           </div>
         </div>
-        <div class="post-actions">
-          <button class="action-btn btn-would-eat" aria-label="Would Eat" data-bias="${post.realView.biasScore}" data-index="${index}">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Would Eat
-          </button>
-          <button class="action-btn btn-pass" aria-label="Pass" data-index="${index}">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            Pass
-          </button>
-        </div>
-        <div class="post-likes">
-          <strong>${post.likes.toLocaleString()} people</strong> ate this
-        </div>
-        <div class="post-caption">
-          <strong>${post.authorName}</strong> ${post.caption}
+
+        <!-- Post Content -->
+        <div class="post-content">
+          <div class="post-actions-row">
+            <div class="post-buttons">
+              <button class="action-btn btn-would-eat" data-bias="${post.realView.biasScore}" data-index="${index}">
+                <span class="icon-circle"><span class="material-symbols-outlined">thumb_up</span></span>
+                Would Eat
+              </button>
+              <button class="action-btn btn-pass" data-index="${index}">
+                <span class="icon-circle"><span class="material-symbols-outlined">close</span></span>
+                Pass
+              </button>
+            </div>
+            <span class="post-social-proof ${isTrending ? 'trending' : ''}">${likesFormatted} ${isTrending ? 'trending' : 'verified'}</span>
+          </div>
+          <h3 class="post-title">${post.authorName}</h3>
+          <p class="post-caption">${post.caption}</p>
         </div>
       `;
-      feedView.appendChild(postEl);
+      feedGrid.appendChild(postEl);
     });
 
-    // Event Delegation
+    // ─── Event Delegation ───
     feedView.addEventListener('click', (e) => {
       // Show real view
       const showRealBtn = e.target.closest('[data-action="show-real"]');
       if (showRealBtn) {
         const idx = showRealBtn.getAttribute('data-index');
-        const reelFace = document.getElementById(`reel-${idx}`);
-        const realFace = document.getElementById(`real-${idx}`);
-        reelFace.style.display = 'none';
-        realFace.style.display = 'block';
-        // Scroll the post into view so user can see the real view from the top
-        const container = document.getElementById(`container-${idx}`);
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById(`reel-${idx}`).style.display = 'none';
+        document.getElementById(`real-${idx}`).style.display = 'block';
+        document.getElementById(`container-${idx}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
 
@@ -406,41 +468,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const backBtn = e.target.closest('[data-action="back-reel"]');
       if (backBtn) {
         const idx = backBtn.getAttribute('data-index');
-        const reelFace = document.getElementById(`reel-${idx}`);
-        const realFace = document.getElementById(`real-${idx}`);
-        realFace.style.display = 'none';
-        reelFace.style.display = 'block';
-        const container = document.getElementById(`container-${idx}`);
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById(`real-${idx}`).style.display = 'none';
+        document.getElementById(`reel-${idx}`).style.display = 'block';
+        document.getElementById(`container-${idx}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
 
-      // Analyze button — run NLP + ML analysis
+      // Analyze button
       const analyzeBtn = e.target.closest('[data-action="analyze"]');
       if (analyzeBtn) {
         const idx = parseInt(analyzeBtn.getAttribute('data-index'));
         const nlpContainer = document.getElementById(`nlp-${idx}`);
-        
-        if (nlpContainer.style.display !== 'none') {
-          // Toggle off
+
+        if (nlpContainer.style.display === 'block') {
           nlpContainer.style.display = 'none';
-          analyzeBtn.innerHTML = `
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            Run AI & ML Analysis
-          `;
+          analyzeBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px">search</span> Run AI & ML Analysis`;
           return;
         }
-        
-        // Show loading state
+
         analyzeBtn.innerHTML = `<span class="analyze-spinner"></span> Analyzing...`;
         analyzeBtn.disabled = true;
 
         const age = sessionStorage.getItem('cravecheck_age') || '18-22';
-        
-        // Simulate brief processing time for realism
+
         setTimeout(() => {
           const sections = generateNLPAnalysis(feedData[idx], age);
-          
           nlpContainer.innerHTML = sections.map(s => `
             <div class="nlp-card nlp-${s.severity}">
               <div class="nlp-card-header">
@@ -450,62 +502,59 @@ document.addEventListener('DOMContentLoaded', () => {
               <p class="nlp-card-body">${s.content}</p>
             </div>
           `).join('');
-          
           nlpContainer.style.display = 'block';
           analyzeBtn.disabled = false;
-          analyzeBtn.innerHTML = `
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            Hide Analysis
-          `;
+          analyzeBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px">close</span> Hide Analysis`;
         }, 800);
         return;
       }
 
-      // Action logic (Would Eat / Pass)
+      // Action buttons (Would Eat / Pass)
       const actionBtn = e.target.closest('.action-btn');
       if (actionBtn && !actionBtn.hasAttribute('disabled')) {
-        const actionRow = actionBtn.closest('.post-actions');
+        const actionRow = actionBtn.closest('.post-buttons');
         const btns = actionRow.querySelectorAll('.action-btn');
         btns.forEach(b => b.setAttribute('disabled', 'true'));
+        actionBtn.classList.add('selected');
+
         const idx = parseInt(actionBtn.getAttribute('data-index'));
 
         if (actionBtn.classList.contains('btn-would-eat')) {
-          actionBtn.style.opacity = '1';
           const bias = parseInt(actionBtn.getAttribute('data-bias'), 10);
           const penalty = Math.min(Math.round(bias * 0.2), 15);
-          currentScore -= penalty;
+          currentScore = Math.max(0, currentScore - penalty);
           userChoices.push({ postIndex: idx, choice: 'would-eat', penalty });
-          
-          const header = document.getElementById('score-header');
-          header.classList.add('pulse-red');
-          setTimeout(() => header.classList.remove('pulse-red'), 300);
+
+          const badge = document.getElementById('score-badge');
+          badge.classList.add('pulse-red');
+          setTimeout(() => badge.classList.remove('pulse-red'), 400);
         } else if (actionBtn.classList.contains('btn-pass')) {
-          actionBtn.style.opacity = '1';
           currentScore = Math.min(100, currentScore + 5);
           userChoices.push({ postIndex: idx, choice: 'pass', penalty: 0 });
         }
 
+        // Update all score displays
         const scoreEl = document.getElementById('score-value');
-        scoreEl.textContent = currentScore;
-        if (currentScore < 50) {
-          scoreEl.classList.add('danger');
-        }
+        const scoreDisplay = document.getElementById('score-display');
+        if (scoreEl) scoreEl.textContent = currentScore;
+        if (scoreDisplay) scoreDisplay.textContent = currentScore;
 
         completedPosts++;
+        const progressLabel = document.getElementById('progress-label');
+        if (progressLabel) progressLabel.textContent = `Progress: ${completedPosts}/${TOTAL_POSTS} posts`;
+
         if (completedPosts === TOTAL_POSTS) {
           setTimeout(showInsights, 600);
         }
       }
     });
-
-    feedView.classList.add('active-feed');
   };
 
+  // ═══════════════════════════════════════════════════════════
+  // INSIGHTS OVERLAY
+  // ═══════════════════════════════════════════════════════════
   const showInsights = () => {
-    feedView.style.overflow = 'hidden'; // Lock scroll
-    
-    let verdict = '';
-    let verdictClass = '';
+    let verdict = '', verdictClass = '';
     if (currentScore >= 80) {
       verdict = "Outstanding. You're highly resistant to deceptive food marketing and aesthetic manipulation.";
       verdictClass = 'verdict-great';
@@ -517,15 +566,13 @@ document.addEventListener('DOMContentLoaded', () => {
       verdictClass = 'verdict-bad';
     }
 
-    const age = sessionStorage.getItem('cravecheck_age') || 'your demographic';
+    const age = sessionStorage.getItem('cravecheck_age') || '18-22';
     const baselineScore = getBaselineForAge(age);
     const difference = currentScore - baselineScore;
-    
     const ml = getMLPredictionForAge(age);
     const mlPercentage = Math.round(ml.avg * 100);
     const insights = getDemographicInsights(age);
 
-    // User behavior analysis
     const wouldEatCount = userChoices.filter(c => c.choice === 'would-eat').length;
     const passCount = userChoices.filter(c => c.choice === 'pass').length;
     const userWouldEatPct = Math.round((wouldEatCount / TOTAL_POSTS) * 100);
@@ -539,7 +586,6 @@ document.addEventListener('DOMContentLoaded', () => {
       comparisonText = `You scored exactly equal to the average user in the <strong>${age}</strong> baseline dataset (${baselineScore} avg).`;
     }
 
-    // ML vs User comparison
     const mlVsUser = userWouldEatPct > mlPercentage
       ? `You chose "Would Eat" <strong>${userWouldEatPct - mlPercentage}% more often</strong> than the model predicted for your age group — suggesting higher susceptibility to food reel influence.`
       : userWouldEatPct < mlPercentage
@@ -551,7 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const cravingHigh = (insights.cravingFreq['Very often'] || 0) + (insights.cravingFreq['Often'] || 0) + (insights.cravingFreq['Sometimes'] || 0);
       const neverCheck = insights.checkNutrition['Never'] || 0;
       const rarelyCheck = insights.checkNutrition['Rarely'] || 0;
-      
+
       insightsHTML = `
         <div class="insight-grid">
           <div class="insight-card">
@@ -624,12 +670,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="insights-card insights-card-ml">
           <h4 class="insights-card-title">🤖 ML Model Prediction</h4>
           <p class="insights-card-text">
-            Based on <strong>${insights ? insights.sampleSize : 'N/A'}</strong> survey responses from the <strong>${age}</strong> age group, 
+            Based on <strong>${insights ? insights.sampleSize : 'N/A'}</strong> survey responses from the <strong>${age}</strong> age group,
             our Logistic Regression model predicts an average <strong>${mlPercentage}% likelihood</strong> of craving food seen in reels.
           </p>
-          <p class="insights-card-text" style="margin-top: 8px;">
-            ${mlVsUser}
-          </p>
+          <p class="insights-card-text" style="margin-top: 8px;">${mlVsUser}</p>
           <div class="ml-bar-container">
             <div class="ml-bar-label">ML Predicted</div>
             <div class="ml-bar-bg"><div class="ml-bar-fill" style="width: ${mlPercentage}%">${mlPercentage}%</div></div>
@@ -641,24 +685,29 @@ document.addEventListener('DOMContentLoaded', () => {
         ${insights ? `
         <div class="insights-card">
           <h4 class="insights-card-title">🔬 Dataset Deep Dive — ${age} Group</h4>
-          <p class="insights-card-text" style="margin-bottom: 12px; font-size: 12px; color: var(--color-text-secondary);">Based on ${insights.sampleSize} responses out of ${insights.totalDataset} total in our survey dataset</p>
+          <p class="insights-card-text" style="margin-bottom: 12px; font-size: 0.75rem; opacity: 0.5;">Based on ${insights.sampleSize} responses out of ${insights.totalDataset} total in our survey dataset</p>
           ${insightsHTML}
         </div>
         ` : ''}
 
-        <button class="btn-primary" onclick="sessionStorage.removeItem('cravecheck_age'); location.reload();" style="width: auto; padding: 12px 32px; margin-top: 16px;">Restart Session</button>
+        <button class="btn-restart" onclick="sessionStorage.removeItem('cravecheck_age'); location.reload();">
+          Restart Session
+          <span class="material-symbols-outlined">refresh</span>
+        </button>
       </div>
     `;
     feedView.appendChild(overlay);
   };
 
-  // Pre-load the dataset, then check session status
+  // ═══════════════════════════════════════════════════════════
+  // INITIALIZATION
+  // ═══════════════════════════════════════════════════════════
   fetch('/final_responses_correct_format.csv')
     .then(res => res.text())
     .then(csv => {
       surveyData = parseCSV(csv);
       console.log(`Loaded ${surveyData.length} baseline responses.`);
-      
+
       const storedAge = sessionStorage.getItem('cravecheck_age');
       if (storedAge) {
         splashView.style.display = 'none';
@@ -669,14 +718,15 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => console.error('Failed to load dataset', err));
 
+  // ─── Start Button Click ───
   startBtn.addEventListener('click', () => {
     const selectedAge = ageSelector.value;
     sessionStorage.setItem('cravecheck_age', selectedAge);
-    
-    // Transition views
+
     splashView.style.display = 'none';
     feedView.style.display = 'block';
-    
+    window.scrollTo(0, 0);
+
     console.log(`Age group ${selectedAge} selected. Starting feed...`);
     renderFeed();
   });
